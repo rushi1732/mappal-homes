@@ -2412,8 +2412,660 @@ button, input, select, textarea {
 }
 
 /* ==========================================================================
-   Mobile Sticky Quick Action Bar
+   ULTIMATE MOBILE-FIRST RESPONSIVE ARCHITECTURE
+   Pixel-Perfect Touch Experience for 320px, 360px, 375px, 390px, 412px, 430px, 768px
    ========================================================================== */
+
+/* --- 1. Global Viewport & Safe-Area Protection --- */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .container {
+    padding-left: 1.15rem;
+    padding-right: 1.15rem;
+  }
+
+  .section-badge {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.8rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.85rem, 6vw, 2.35rem);
+    line-height: 1.18;
+    word-break: break-word;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+
+  /* Universal Section Mobile Padding */
+  .about-section,
+  .services-section,
+  .properties-section,
+  .why-section,
+  .calculator-section,
+  .gallery-section,
+  .reviews-section,
+  .contact-section {
+    padding: 3.75rem 0;
+  }
+}
+
+/* --- 2. Mobile Header & Navigation (< 768px) --- */
+@media (max-width: 768px) {
+  .site-header {
+    background: rgba(16, 31, 44, 0.94);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-inner {
+    height: 64px;
+    gap: 0.75rem;
+  }
+
+  .site-header.scrolled .nav-inner {
+    height: 60px;
+  }
+
+  .brand-logo {
+    gap: 0.65rem;
+  }
+
+  .brand-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+  }
+
+  .brand-icon-box svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .brand-name {
+    font-size: 1.15rem;
+    line-height: 1.1;
+  }
+
+  .brand-tag {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+  }
+
+  .nav-actions {
+    gap: 0.5rem;
+  }
+
+  .btn-header-cta {
+    display: none; /* Prominent CTA resides in sticky bottom bar & drawer */
+  }
+
+  .mobile-menu-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+  }
+
+  .site-header.scrolled .mobile-menu-btn {
+    border-color: var(--border-stone);
+    color: var(--color-navy);
+  }
+}
+
+/* --- 3. Mobile Navigation Drawer --- */
+@media (max-width: 768px) {
+  .mobile-drawer-content {
+    width: 88%;
+    max-width: 360px;
+    padding: 2rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-drawer-header {
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .mobile-drawer-close {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .mobile-nav-link {
+    padding: 0.85rem 1rem;
+    font-size: 0.98rem;
+    min-height: 48px;
+  }
+}
+
+/* --- 4. Mobile Hero Canvas (< 768px) --- */
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 88px;
+    padding-bottom: 28px;
+    background-position: center 25%;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.75rem;
+    margin-bottom: 1.15rem;
+    gap: 0.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.05rem, 7.8vw, 2.75rem);
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-marathi {
+    font-size: 0.98rem;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+    gap: 0.45rem;
+  }
+
+  .hero-marathi::before {
+    width: 16px;
+  }
+
+  .hero-description {
+    font-size: 0.98rem;
+    line-height: 1.62;
+    margin-bottom: 1.65rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.85rem;
+  }
+
+  .hero-cta-group .btn {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+
+  /* 2x2 Mobile Trust Grid */
+  .hero-trust-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .hero-trust-item {
+    font-size: 0.78rem;
+    line-height: 1.3;
+    padding: 0.6rem 0.65rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 0.45rem;
+  }
+
+  .hero-trust-item svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Architectural Visual Frame */
+  .hero-visual-wrapper {
+    margin-top: 0.5rem;
+  }
+
+  .hero-image-frame {
+    aspect-ratio: 16 / 10;
+    max-height: 280px;
+    border-radius: var(--radius-md);
+  }
+
+  .hero-image-caption {
+    padding: 1.25rem 1rem 0.85rem;
+  }
+
+  .hero-caption-title {
+    font-size: 0.98rem;
+  }
+
+  .hero-caption-sub {
+    font-size: 0.75rem;
+  }
+}
+
+/* --- 5. Mobile Property Discovery Suite (< 768px) --- */
+@media (max-width: 768px) {
+  .discovery-section {
+    padding: 1.5rem 0 3.25rem;
+  }
+
+  .discovery-card {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .discovery-header-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .discovery-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .discovery-col {
+    background: var(--color-stone-light);
+    border: 1px solid var(--border-stone);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    min-height: 54px;
+    justify-content: center;
+    border-right: 1px solid var(--border-stone);
+  }
+
+  .discovery-label {
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+  }
+
+  .discovery-select {
+    font-size: 16px; /* Prevents iOS auto-zoom */
+    min-height: 28px;
+    padding: 0.15rem 0;
+  }
+
+  .btn-discovery-search {
+    width: 100%;
+    min-height: 48px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    margin-top: 0.25rem;
+  }
+}
+
+/* --- 6. Mobile Horizontal Scroll Filter Bar --- */
+@media (max-width: 768px) {
+  .services-filter-bar,
+  .properties-filter-bar {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.65rem;
+    scrollbar-width: none;
+    gap: 0.5rem;
+  }
+
+  .services-filter-bar::-webkit-scrollbar,
+  .properties-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 0.55rem 1rem;
+    font-size: 0.84rem;
+    min-height: 40px;
+    border-radius: var(--radius-full);
+  }
+}
+
+/* --- 7. Mobile Services Cards (< 768px) --- */
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .service-card {
+    padding: 1.65rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .service-card-number {
+    font-size: 1.75rem;
+  }
+
+  .service-title {
+    font-size: 1.25rem;
+  }
+
+  .service-subtitle {
+    font-size: 0.88rem;
+  }
+
+  .service-desc {
+    font-size: 0.92rem;
+  }
+
+  .service-feature-item {
+    font-size: 0.86rem;
+  }
+
+  .service-card .btn {
+    min-height: 46px;
+    width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+/* --- 8. Mobile Featured Properties (< 768px) --- */
+@media (max-width: 768px) {
+  .properties-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .property-card {
+    border-radius: var(--radius-md);
+  }
+
+  .property-image-wrap {
+    aspect-ratio: 16 / 10;
+  }
+
+  .property-body {
+    padding: 1.25rem 1.15rem;
+  }
+
+  .property-price {
+    font-size: 1.45rem;
+  }
+
+  .property-price-sub {
+    font-size: 0.78rem;
+  }
+
+  .property-title {
+    font-size: 1.2rem;
+  }
+
+  .property-location {
+    font-size: 0.85rem;
+  }
+
+  .property-specs {
+    font-size: 0.82rem;
+    gap: 1rem;
+  }
+
+  .property-tags {
+    gap: 0.35rem;
+  }
+
+  .prop-tag {
+    font-size: 0.74rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .property-actions {
+    gap: 0.65rem;
+    margin-top: 1.15rem;
+  }
+
+  .property-actions .btn-whatsapp {
+    min-height: 44px;
+    font-size: 0.88rem;
+  }
+
+  .property-actions .btn-secondary {
+    min-height: 44px;
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* --- 9. Mobile Why Choose Us (< 768px) --- */
+@media (max-width: 768px) {
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .why-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .why-card-index {
+    font-size: 2.25rem;
+  }
+
+  .why-card-title {
+    font-size: 1.15rem;
+  }
+
+  .why-card-desc {
+    font-size: 0.92rem;
+  }
+}
+
+/* --- 10. Mobile EMI Calculator (< 768px) --- */
+@media (max-width: 768px) {
+  .calculator-wrapper {
+    grid-template-columns: 1fr;
+    border-radius: var(--radius-md);
+  }
+
+  .calculator-controls {
+    padding: 1.65rem 1.25rem;
+  }
+
+  .calc-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .calc-label {
+    font-size: 0.88rem;
+  }
+
+  .calc-val-pill {
+    font-size: 0.95rem;
+    padding: 0.25rem 0.65rem;
+  }
+
+  .calc-slider {
+    height: 8px;
+  }
+
+  .calc-slider::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .calculator-results {
+    padding: 1.85rem 1.25rem;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .calc-emi-amount {
+    font-size: clamp(2.1rem, 7.5vw, 2.65rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .calc-breakdown-row {
+    font-size: 0.88rem;
+    padding: 0.5rem 0;
+  }
+
+  #calc-loan-cta {
+    min-height: 48px;
+    font-size: 0.95rem;
+    margin-top: 1.25rem;
+  }
+}
+
+/* --- 11. Mobile Gallery & Lightbox (< 768px) --- */
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .gallery-item {
+    aspect-ratio: 16 / 11;
+    border-radius: 8px;
+  }
+
+  .gallery-item-title {
+    font-size: 0.95rem;
+  }
+
+  .gallery-item-sub {
+    font-size: 0.75rem;
+  }
+
+  .lightbox-content {
+    width: 92%;
+    max-width: 440px;
+  }
+
+  .lightbox-close-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.8rem;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* --- 12. Mobile Reviews & Testimonials (< 768px) --- */
+@media (max-width: 768px) {
+  .justdial-banner {
+    padding: 1.35rem 1.15rem;
+    flex-direction: column;
+    text-align: left;
+    align-items: flex-start;
+    gap: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .justdial-banner-left {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .justdial-banner .btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .testimonial-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: var(--radius-md);
+  }
+
+  .testimonial-text {
+    font-size: 0.94rem;
+  }
+}
+
+/* --- 13. Mobile Contact Section & Form (< 768px) --- */
+@media (max-width: 768px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .contact-info-wrap {
+    padding: 1.65rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .contact-map-frame {
+    aspect-ratio: 16 / 9;
+    max-height: 220px;
+  }
+
+  .consultation-form-wrap {
+    padding: 1.65rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px; /* Prevents iOS auto-zoom */
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+
+  #enquiry-form .btn {
+    min-height: 48px;
+    width: 100%;
+    font-size: 0.95rem;
+  }
+}
+
+/* --- 14. Mobile Footer (< 768px) --- */
+@media (max-width: 768px) {
+  .site-footer {
+    padding-top: 3.5rem;
+    padding-bottom: calc(75px + env(safe-area-inset-bottom, 1rem));
+  }
+
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    gap: 0.85rem;
+    text-align: center;
+  }
+}
+
+/* --- 15. Mobile Sticky Bottom Quick Action Bar --- */
 .mobile-sticky-cta {
   display: none;
   position: fixed;
@@ -2421,27 +3073,63 @@ button, input, select, textarea {
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border-stone);
-  padding: 0.75rem 1rem;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-  gap: 0.75rem;
+  background: rgba(16, 31, 44, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(198, 165, 107, 0.3);
+  padding: 0.65rem 0.85rem max(0.65rem, env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
+  gap: 0.5rem;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
   .mobile-sticky-cta {
     display: flex;
   }
-  body {
-    padding-bottom: 70px;
-  }
 }
 
 .mobile-cta-btn {
   flex: 1;
-  padding: 0.75rem 1rem;
-  font-size: 0.88rem;
-  font-weight: 600;
+  min-height: 44px;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+/* --- 16. Ultra-Compact Mobile Phones (<= 360px) --- */
+@media (max-width: 360px) {
+  .container {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .hero-title {
+    font-size: 1.85rem;
+  }
+
+  .hero-trust-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-cta-btn {
+    font-size: 0.76rem;
+    padding: 0.45rem 0.25rem;
+    gap: 0.3rem;
+  }
+
+  .mobile-cta-btn svg {
+    width: 14px;
+    height: 14px;
+  }
 }
