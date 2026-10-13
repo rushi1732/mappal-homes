@@ -3,7 +3,7 @@
 // All details verified from Google Business & Justdial listings
 // ==========================================================================
 
-export const businessData = {
+const businessData = {
   name: "Maple Homes and Enterprises",
   tagline: "Your Trusted Real Estate & Commercial Property Partner in Navi Mumbai",
   marathiTagline: "विश्वासू आणि पारदर्शक रिअल इस्टेट सल्लागार • नवीन पनवेल",
@@ -343,3 +343,8 @@ export const businessData = {
     }
   ]
 };
+
+if (typeof window !== 'undefined') {
+  window.businessData = businessData;
+}
+

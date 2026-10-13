@@ -2,7 +2,7 @@
 // Maple Homes and Enterprises — Interactive App Logic
 // ==========================================================================
 
-import { businessData } from './data.js';
+const businessData = window.businessData || {};
 
 // --- Utility Functions ---
 const formatINR = (val) => {
