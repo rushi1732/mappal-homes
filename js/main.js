@@ -168,7 +168,7 @@ function renderServices(filter = 'all') {
           </ul>
         </div>
         <div>
-          <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%;">
+          <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="width: 100%;">
             ${svgIcons.whatsapp}
             <span>Enquire on WhatsApp</span>
           </a>
@@ -185,15 +185,74 @@ window.filterServices = (category, btn) => {
   renderServices(category);
 };
 
-// --- 5. Render Featured Properties ---
-function renderProperties(filter = 'all') {
+// --- 5. Render Featured Properties with Multi-Attribute Filtering ---
+function renderProperties(filterCriteria = 'all') {
   const container = document.getElementById('properties-grid');
   if (!container || !businessData.featuredProperties) return;
 
-  const filtered =
-    filter === 'all'
-      ? businessData.featuredProperties
-      : businessData.featuredProperties.filter((p) => p.category === filter);
+  let filtered = [...businessData.featuredProperties];
+
+  if (typeof filterCriteria === 'string') {
+    if (filterCriteria !== 'all') {
+      filtered = filtered.filter((p) => p.category === filterCriteria);
+    }
+  } else if (typeof filterCriteria === 'object' && filterCriteria !== null) {
+    const { category, location, budget, possession } = filterCriteria;
+
+    if (category && category !== 'all') {
+      filtered = filtered.filter((p) => p.category === category);
+    }
+
+    if (location && location !== 'all') {
+      filtered = filtered.filter((p) => {
+        const locLower = (p.location || '').toLowerCase();
+        if (location === 'panvel') return locLower.includes('panvel') || locLower.includes('melody');
+        if (location === 'karanjade') return locLower.includes('karanjade');
+        if (location === 'ulwe') return locLower.includes('ulwe') || locLower.includes('airport') || locLower.includes('nmia');
+        if (location === 'kamothe') return locLower.includes('kamothe') || locLower.includes('khandeshwar');
+        return true;
+      });
+    }
+
+    if (budget && budget !== 'all') {
+      filtered = filtered.filter((p) => {
+        const priceStr = (p.price || '').toLowerCase();
+        if (budget === 'rental') return priceStr.includes('month') || priceStr.includes('/ mo') || p.category === 'commercial';
+        if (budget === 'budget-1') return priceStr.includes('36') || priceStr.includes('42') || priceStr.includes('48');
+        if (budget === 'budget-2') return priceStr.includes('65') || priceStr.includes('78') || priceStr.includes('85');
+        if (budget === 'budget-3') return priceStr.includes('1.') || priceStr.includes('cr');
+        return true;
+      });
+    }
+
+    if (possession && possession !== 'all') {
+      filtered = filtered.filter((p) => {
+        const posLower = (p.possession || '').toLowerCase();
+        if (possession === 'ready') return posLower.includes('ready') || posLower.includes('immediate');
+        if (possession === 'new') return posLower.includes('launch') || posLower.includes('rera') || posLower.includes('under');
+        return true;
+      });
+    }
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-properties-notice" style="grid-column: 1 / -1; background: var(--color-stone-light); border: 1px solid var(--border-stone); border-radius: var(--radius-md); padding: 3rem 2rem; text-align: center;">
+        <div style="font-family: var(--font-serif); font-size: 1.45rem; color: var(--color-navy); margin-bottom: 0.5rem;">No exact properties match this filter combination</div>
+        <p style="color: var(--text-muted); max-width: 580px; margin: 0 auto 1.5rem; font-size: 0.98rem;">We manage unlisted builder inventory and exclusive off-market properties in New Panvel & Airport zones. Connect directly with our advisors.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=Hello%20Maple%20Homes!%20I%20am%20looking%20for%20a%20property%20in%20Navi%20Mumbai%20matching%20specific%20requirements.%20Please%20share%20unlisted%20options." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+            ${svgIcons.whatsapp}
+            <span>Consult on WhatsApp</span>
+          </a>
+          <button type="button" class="btn btn-secondary" onclick="filterProperties('all')">
+            <span>Show All Properties</span>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
   container.innerHTML = filtered
     .map((p) => {
@@ -203,7 +262,7 @@ function renderProperties(filter = 'all') {
       return `
       <div class="property-card" data-category="${p.category}">
         <div class="property-image-wrap">
-          <img src="${p.image}" alt="${p.title}" class="property-img" loading="lazy">
+          <img src="${p.image}" alt="${p.title}" class="property-img" loading="lazy" width="800" height="600">
           <span class="property-badge-type">${p.type}</span>
           <span class="property-badge-status">${p.possession}</span>
         </div>
@@ -227,7 +286,7 @@ function renderProperties(filter = 'all') {
             </div>
           </div>
           <div class="property-actions">
-            <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-whatsapp" style="flex: 1; padding: 0.75rem 1rem; font-size: 0.85rem;">
+            <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" style="flex: 1; padding: 0.75rem 1rem; font-size: 0.85rem;">
               ${svgIcons.whatsapp}
               <span>WhatsApp</span>
             </a>
@@ -244,7 +303,12 @@ function renderProperties(filter = 'all') {
 
 window.filterProperties = (category, btn) => {
   document.querySelectorAll('.properties-filter-bar .filter-btn').forEach((b) => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    const defaultBtn = document.querySelector(`.properties-filter-bar .filter-btn[onclick*="${category}"]`);
+    if (defaultBtn) defaultBtn.classList.add('active');
+  }
   renderProperties(category);
 };
 
@@ -408,6 +472,15 @@ function initCalculator() {
     principalDisplay.textContent = formatINR(P);
     interestDisplay.textContent = formatINR(Math.round(totalInterest));
     totalDisplay.textContent = formatINR(Math.round(totalPayment));
+
+    // Dynamically update WhatsApp Loan Assistance button message
+    const loanCta = document.getElementById('calc-loan-cta');
+    if (loanCta) {
+      const waLoanMsg = encodeURIComponent(
+        `Hello Maple Homes! I used your website EMI calculator for an estimated loan of ${formatLakhsCr(P)} at ${annualRate}% for ${tenureYears} Years (Estimated EMI: ${formatINR(Math.round(emi))}/month). Please guide me with home loan assistance and bank offers.`
+      );
+      loanCta.href = `https://wa.me/${businessData.contact.whatsappPhone}?text=${waLoanMsg}`;
+    }
   };
 
   amountSlider.addEventListener('input', calculate);
@@ -447,35 +520,50 @@ function initContactForm() {
 
     const waUrl = `https://wa.me/${businessData.contact.whatsappPhone}?text=${encodeURIComponent(waText)}`;
 
-    // Open WhatsApp in new tab
-    window.open(waUrl, '_blank');
+    // Open WhatsApp securely
+    const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
+    if (win) win.opener = null;
 
     showToast('Consultation request prepared! Connecting to WhatsApp...');
     form.reset();
   });
 }
 
-// --- 11. Quick Discovery Search Bar Logic ---
+// --- 11. Quick Discovery Search Bar Logic (Full 4-Attribute Filter) ---
 function initDiscoverySearch() {
   const btn = document.getElementById('btn-discovery-search');
   const catSelect = document.getElementById('search-category');
+  const locSelect = document.getElementById('search-location');
+  const budgetSelect = document.getElementById('search-budget');
+  const possSelect = document.getElementById('search-possession');
 
-  if (!btn || !catSelect) return;
+  if (!btn) return;
 
   btn.addEventListener('click', () => {
-    const chosenCat = catSelect.value;
-    const targetFilter = (chosenCat === 'all') ? 'all' : chosenCat;
-    
+    const chosenCat = catSelect ? catSelect.value : 'all';
+    const chosenLoc = locSelect ? locSelect.value : 'all';
+    const chosenBudget = budgetSelect ? budgetSelect.value : 'all';
+    const chosenPoss = possSelect ? possSelect.value : 'all';
+
+    // Synchronize category filter buttons
     const propBtns = document.querySelectorAll('.properties-filter-bar .filter-btn');
     propBtns.forEach((b) => {
-      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(targetFilter)) {
+      const btnOnclick = b.getAttribute('onclick') || '';
+      if (chosenCat !== 'all' && btnOnclick.includes(chosenCat)) {
+        b.classList.add('active');
+      } else if (chosenCat === 'all' && btnOnclick.includes("'all'")) {
         b.classList.add('active');
       } else {
         b.classList.remove('active');
       }
     });
 
-    renderProperties(targetFilter);
+    renderProperties({
+      category: chosenCat,
+      location: chosenLoc,
+      budget: chosenBudget,
+      possession: chosenPoss
+    });
 
     const propSection = document.getElementById('properties');
     if (propSection) {
