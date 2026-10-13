@@ -1,10 +1,10 @@
 // ==========================================================================
-// Maple Homes and Enterprises — Interactive App Logic
+// Maple Homes & Enterprises — Ultra-Luxury Interactive App Logic
 // ==========================================================================
 
 const businessData = window.businessData || {};
 
-// --- Utility Functions ---
+// --- Utility Formatters ---
 const formatINR = (val) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -15,12 +15,12 @@ const formatINR = (val) => {
 
 const formatLakhsCr = (amount) => {
   if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(2)} Cr`;
+    return `₹${(amount / 10000000).toFixed(2)} Crore`;
   }
   return `₹${(amount / 100000).toFixed(1)} Lakh`;
 };
 
-// --- DOM Content Loaded ---
+// --- DOM Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
   initStickyHeader();
   initMobileDrawer();
@@ -33,8 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initCalculator();
   initContactForm();
   initLightbox();
+  initDiscoverySearch();
+  initScrollSpy();
 
-  // Initialize Lucide icons if loaded
+  // Initialize Lucide icons
   if (window.lucide) {
     window.lucide.createIcons();
   }
@@ -43,48 +45,54 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- 1. Sticky Header ---
 function initStickyHeader() {
   const header = document.querySelector('.site-header');
+  if (!header) return;
+
   window.addEventListener('scroll', () => {
     if (window.scrollY > 40) {
       header.classList.add('scrolled');
     } else {
       header.classList.remove('scrolled');
     }
-  });
+  }, { passive: true });
 }
 
 // --- 2. Mobile Drawer Navigation ---
 function initMobileDrawer() {
   const menuBtn = document.querySelector('.mobile-menu-btn');
   const drawer = document.querySelector('.mobile-drawer');
+  const closeBtn = document.getElementById('mobile-drawer-close');
   const navLinks = document.querySelectorAll('.mobile-nav-link');
 
-  if (!menuBtn || !drawer) return;
+  if (!drawer) return;
 
-  const toggleDrawer = () => {
-    drawer.classList.toggle('open');
-    const isOpen = drawer.classList.contains('open');
-    menuBtn.setAttribute('aria-expanded', isOpen);
+  const openDrawer = () => {
+    drawer.classList.add('open');
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
   };
 
-  menuBtn.addEventListener('click', toggleDrawer);
+  const closeDrawer = () => {
+    drawer.classList.remove('open');
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
+  if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
 
   drawer.addEventListener('click', (e) => {
-    if (e.target === drawer) {
-      drawer.classList.remove('open');
-    }
+    if (e.target === drawer) closeDrawer();
   });
 
   navLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      drawer.classList.remove('open');
-    });
+    link.addEventListener('click', closeDrawer);
   });
 }
 
 // --- 3. Render Stats ---
 function renderStats() {
   const container = document.getElementById('stats-grid');
-  if (!container) return;
+  if (!container || !businessData.stats) return;
 
   container.innerHTML = businessData.stats
     .map(
@@ -99,10 +107,10 @@ function renderStats() {
     .join('');
 }
 
-// --- 4. Render Services with Filter ---
+// --- 4. Render Services with Filter & Architectural Numbers ---
 function renderServices(filter = 'all') {
   const container = document.getElementById('services-grid');
-  if (!container) return;
+  if (!container || !businessData.services) return;
 
   const filtered =
     filter === 'all'
@@ -110,14 +118,16 @@ function renderServices(filter = 'all') {
       : businessData.services.filter((s) => s.category === filter);
 
   container.innerHTML = filtered
-    .map((s) => {
+    .map((s, index) => {
+      const stageNumber = String(index + 1).padStart(2, '0');
       const waMsg = encodeURIComponent(
-        `Hello Maple Homes! I am interested in your service: "${s.title}". Please share details and availability.`
+        `Hello Maple Homes! I am interested in your service: "${s.title}". Please share details and consultation availability.`
       );
       return `
       <div class="service-card" data-category="${s.category}">
         ${s.badge ? `<span class="service-badge">${s.badge}</span>` : ''}
         <div>
+          <div class="service-card-number">${stageNumber}</div>
           <div class="service-icon-box">
             <i data-lucide="${s.icon}"></i>
           </div>
@@ -137,9 +147,9 @@ function renderServices(filter = 'all') {
               .join('')}
           </ul>
         </div>
-        <div style="margin-top: 1rem;">
+        <div>
           <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%;">
-            <i data-lucide="message-circle" style="width: 18px; height: 18px;"></i>
+            <i data-lucide="message-circle" style="width: 16px; height: 16px; color: var(--color-teal);"></i>
             <span>Enquire on WhatsApp</span>
           </a>
         </div>
@@ -153,17 +163,16 @@ function renderServices(filter = 'all') {
   }
 }
 
-// Service Filter buttons
 window.filterServices = (category, btn) => {
   document.querySelectorAll('.services-filter-bar .filter-btn').forEach((b) => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderServices(category);
 };
 
 // --- 5. Render Featured Properties ---
 function renderProperties(filter = 'all') {
   const container = document.getElementById('properties-grid');
-  if (!container) return;
+  if (!container || !businessData.featuredProperties) return;
 
   const filtered =
     filter === 'all'
@@ -173,7 +182,7 @@ function renderProperties(filter = 'all') {
   container.innerHTML = filtered
     .map((p) => {
       const waMsg = encodeURIComponent(
-        `Hello Maple Homes! I am interested in viewing: "${p.title}" at ${p.location} (Quoted: ${p.price}). Please share more details and arrange a visit.`
+        `Hello Maple Homes! I am interested in viewing: "${p.title}" at ${p.location} (Quoted: ${p.price}). Please share more details and arrange a site visit.`
       );
       return `
       <div class="property-card" data-category="${p.category}">
@@ -190,7 +199,7 @@ function renderProperties(filter = 'all') {
             </div>
             <h3 class="property-title">${p.title}</h3>
             <div class="property-location">
-              <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--brand-primary);"></i>
+              <i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--color-teal);"></i>
               <span>${p.location}</span>
             </div>
             <div class="property-specs">
@@ -201,13 +210,13 @@ function renderProperties(filter = 'all') {
               ${p.tags.map((t) => `<span class="prop-tag">${t}</span>`).join('')}
             </div>
           </div>
-          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-            <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-whatsapp" style="flex: 1; padding: 0.65rem 0.75rem; font-size: 0.825rem;">
+          <div class="property-actions">
+            <a href="https://wa.me/${businessData.contact.whatsappPhone}?text=${waMsg}" target="_blank" rel="noopener" class="btn btn-whatsapp" style="flex: 1; padding: 0.75rem 1rem; font-size: 0.85rem;">
               <i data-lucide="message-circle" style="width: 16px; height: 16px;"></i>
               <span>WhatsApp</span>
             </a>
-            <a href="tel:${businessData.contact.primaryPhone}" class="btn btn-secondary" style="padding: 0.65rem 0.85rem; font-size: 0.825rem;" title="Call Us Directly">
-              <i data-lucide="phone" style="width: 16px; height: 16px;"></i>
+            <a href="tel:${businessData.contact.primaryPhone}" class="btn btn-secondary" style="padding: 0.75rem 1rem;" title="Call Us Directly">
+              <i data-lucide="phone" style="width: 16px; height: 16px; color: var(--color-teal);"></i>
             </a>
           </div>
         </div>
@@ -223,19 +232,20 @@ function renderProperties(filter = 'all') {
 
 window.filterProperties = (category, btn) => {
   document.querySelectorAll('.properties-filter-bar .filter-btn').forEach((b) => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderProperties(category);
 };
 
-// --- 6. Render Why Choose Us ---
+// --- 6. Render Why Choose Us with Large Stage Numbers ---
 function renderWhyUs() {
   const container = document.getElementById('why-grid');
-  if (!container) return;
+  if (!container || !businessData.whyChooseUs) return;
 
   container.innerHTML = businessData.whyChooseUs
     .map(
-      (w) => `
+      (w, index) => `
     <div class="why-card">
+      <div class="why-card-index">${String(index + 1).padStart(2, '0')}</div>
       <div class="why-icon-box">
         <i data-lucide="${w.icon}"></i>
       </div>
@@ -254,7 +264,7 @@ function renderWhyUs() {
 // --- 7. Render Curated Gallery ---
 function renderGallery() {
   const container = document.getElementById('gallery-grid');
-  if (!container) return;
+  if (!container || !businessData.gallery) return;
 
   container.innerHTML = businessData.gallery
     .map(
@@ -282,6 +292,8 @@ window.openLightbox = (idx) => {
   const caption = document.getElementById('lightbox-caption');
 
   const item = businessData.gallery[idx];
+  if (!item) return;
+
   img.src = item.image;
   img.alt = item.title;
   title.textContent = item.title;
@@ -314,10 +326,10 @@ function initLightbox() {
   });
 }
 
-// --- 8. Render Testimonials (Verified Justdial Reviews) ---
+// --- 8. Render Verified Justdial Reviews ---
 function renderTestimonials() {
   const container = document.getElementById('testimonials-grid');
-  if (!container) return;
+  if (!container || !businessData.testimonials) return;
 
   container.innerHTML = businessData.testimonials
     .map(
@@ -326,7 +338,7 @@ function renderTestimonials() {
       <div>
         <div class="testimonial-stars">
           ${Array(t.rating)
-            .fill('<i data-lucide="star" style="fill: #F59E0B; width: 18px; height: 18px;"></i>')
+            .fill('<i data-lucide="star" style="fill: #C6A56B; color: #C6A56B; width: 17px; height: 17px;"></i>')
             .join('')}
         </div>
         <p class="testimonial-text">"${t.review}"</p>
@@ -336,7 +348,7 @@ function renderTestimonials() {
         <div>
           <div class="testimonial-author-name">${t.name}</div>
           <div class="testimonial-source">
-            <i data-lucide="check-circle" style="width: 14px; height: 14px; color: var(--brand-primary);"></i>
+            <i data-lucide="check-circle-2" style="width: 14px; height: 14px; color: var(--color-teal);"></i>
             <span>${t.source} • ${t.date}</span>
           </div>
         </div>
@@ -373,7 +385,7 @@ function initCalculator() {
     const annualRate = parseFloat(rateSlider.value);
     const tenureYears = parseFloat(tenureSlider.value);
 
-    // Update displays
+    // Update value badge labels
     amountDisplay.textContent = formatLakhsCr(P);
     rateDisplay.textContent = `${annualRate}% p.a.`;
     tenureDisplay.textContent = `${tenureYears} Years (${tenureYears * 12} Mos)`;
@@ -400,7 +412,7 @@ function initCalculator() {
   calculate();
 }
 
-// --- 10. Contact Form with WhatsApp Integration ---
+// --- 10. Contact Consultation Form with WhatsApp Integration ---
 function initContactForm() {
   const form = document.getElementById('enquiry-form');
   if (!form) return;
@@ -420,22 +432,82 @@ function initContactForm() {
     }
 
     const waText = 
-      `*New Property Enquiry from Website*\n\n` +
+      `*New Property Consultation Request*\n\n` +
       `👤 *Name:* ${name}\n` +
       `📞 *Phone:* ${phone}\n` +
       `🏢 *Requirement:* ${service}\n` +
-      `💰 *Budget Range:* ${budget}\n` +
-      (message ? `📝 *Message:* ${message}\n\n` : '\n') +
-      `Please connect with me with suitable options.`;
+      `💰 *Budget:* ${budget}\n` +
+      (message ? `📝 *Preferences:* ${message}\n\n` : '\n') +
+      `Please connect with suitable verified options from Melody Tower office.`;
 
     const waUrl = `https://wa.me/${businessData.contact.whatsappPhone}?text=${encodeURIComponent(waText)}`;
 
-    // Open WhatsApp
+    // Open WhatsApp in new tab
     window.open(waUrl, '_blank');
 
-    showToast('Enquiry prepared! Opening WhatsApp now...');
+    showToast('Consultation request prepared! Connecting to WhatsApp...');
     form.reset();
   });
+}
+
+// --- 11. Quick Discovery Search Bar Logic ---
+function initDiscoverySearch() {
+  const btn = document.getElementById('btn-discovery-search');
+  const catSelect = document.getElementById('search-category');
+
+  if (!btn || !catSelect) return;
+
+  btn.addEventListener('click', () => {
+    const chosenCat = catSelect.value;
+    // Map to properties filter
+    const targetFilter = (chosenCat === 'all') ? 'all' : chosenCat;
+    
+    // Find corresponding filter button in properties section
+    const propBtns = document.querySelectorAll('.properties-filter-bar .filter-btn');
+    propBtns.forEach((b) => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(targetFilter)) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    renderProperties(targetFilter);
+
+    // Smooth scroll to properties section
+    const propSection = document.getElementById('properties');
+    if (propSection) {
+      propSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+}
+
+// --- 12. Active Nav Link on Scroll (ScrollSpy) ---
+function initScrollSpy() {
+  const sections = document.querySelectorAll('section[id], header[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  if (!sections.length || !navLinks.length) return;
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    const scrollPosition = window.scrollY + 120;
+
+    sections.forEach((section) => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach((link) => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  }, { passive: true });
 }
 
 // Toast helper
@@ -444,18 +516,33 @@ function showToast(msg) {
   if (!toast) {
     toast = document.createElement('div');
     toast.className = 'toast-notice';
-    toast.innerHTML = `
-      <i data-lucide="check-circle-2" class="toast-icon"></i>
-      <span class="toast-text"></span>
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--color-navy);
+      color: #FFF;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--color-gold);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 9999;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.3s ease;
     `;
     document.body.appendChild(toast);
-    if (window.lucide) window.lucide.createIcons();
   }
 
-  toast.querySelector('.toast-text').textContent = msg;
-  toast.classList.add('show');
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
 
   setTimeout(() => {
-    toast.classList.remove('show');
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
   }, 4000);
 }
